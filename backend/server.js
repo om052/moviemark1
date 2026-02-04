@@ -26,6 +26,7 @@ const io = socketIo(server, {
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.static(path.join(__dirname, "../frontend")));
 
 // routes
 app.use("/api/auth", require("./routes/auth"));
@@ -42,12 +43,11 @@ app.use("/api/testimonials", require("./routes/testimonials"));
 
 // home page
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/index.html"));
+  res.sendFile("index.html", { root: path.join(__dirname, "../frontend") });
 });
 
-// example: register page
 app.get("/register", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/register.html"));
+  res.sendFile("register.html", { root: path.join(__dirname, "../frontend") });
 });
 
 // connect mongodb
