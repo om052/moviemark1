@@ -1,0 +1,3588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MovieMark</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #020617;
+            padding: 25px;
+            border-right: 1px solid #1e293b;
+        }
+
+        .sidebar .logo {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ef4444;
+        }
+
+        .sidebar .nav-item {
+            display: block;
+            padding: 12px 15px;
+            color: #cbd5f5;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .sidebar .nav-item:hover,
+        .sidebar .nav-item.active {
+            background: #1e293b;
+            color: #fff;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: #020617;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid #1e293b;
+        }
+
+        .stat-card h3 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ef4444;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: #020617;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #1e293b;
+        }
+
+        .content-section h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #ef4444;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: #fff;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .data-table th {
+            background: #1e293b;
+            font-weight: 600;
+            color: #cbd5f5;
+        }
+
+        .data-table tr:hover {
+            background: #1e293b;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-active {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #020617;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #1e293b;
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #ef4444;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #cbd5f5;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            background: #0f172a;
+            color: #fff;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">🎬 MovieMark Admin</div>
+            <div class="nav-item active" onclick="showSection('dashboard')">📊 Dashboard</div>
+            <div class="nav-item" onclick="showSection('analytics')">📈 Analytics</div>
+            <div class="nav-item" onclick="showSection('reports')">📋 Reports</div>
+            <div class="nav-item" onclick="showSection('users')">👥 Users</div>
+            <div class="nav-item" onclick="showSection('projects')">🎬 Projects</div>
+            <div class="nav-item" onclick="showSection('requests')">🤝 Requests</div>
+            <div class="nav-item" onclick="showSection('chatrooms')">💬 Chatrooms</div>
+            <div class="nav-item" onclick="showSection('crowdfunding')">💰 Crowdfunding</div>
+            <div class="nav-item" onclick="showSection('logs')">📋 System Logs</div>
+            <div class="nav-item" onclick="showSection('scripts-ratings')">📜 Scripts & Ratings</div>
+            <div class="nav-item" onclick="showSection('read-lists')">📖 Read Lists</div>
+            <div class="nav-item" onclick="showSection('post-production')">🎬 Post-Production</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Admin Dashboard</h1>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section">
+                <h2>📊 Platform Overview</h2>
+                <div class="stats-grid" id="statsGrid">
+                    <!-- Stats will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="content-section" style="display: none;">
+                <h2>📈 Platform Analytics</h2>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="loadPlatformAnalytics()">🔄 Refresh Analytics</button>
+                    <button class="action-btn btn-success" onclick="exportAnalyticsData()">📥 Export Analytics</button>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="stats-grid" id="analyticsGrid">
+                    <!-- Analytics will be loaded here -->
+                </div>
+
+                <!-- Charts Section -->
+                <div style="margin-top: 30px;">
+                    <h3>User Growth Chart</h3>
+                    <canvas id="userGrowthChart" width="600" height="300" style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; margin-bottom: 30px;"></canvas>
+
+                    <h3>Content Upload Trends</h3>
+                    <canvas id="contentTrendsChart" width="600" height="300" style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; margin-bottom: 30px;"></canvas>
+
+                    <h3>Chat Activity Overview</h3>
+                    <canvas id="chatActivityChart" width="600" height="300" style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px;"></canvas>
+                </div>
+
+                <!-- Detailed Analytics Tables -->
+                <div style="margin-top: 40px;">
+                    <h3>Top Performing Content</h3>
+                    <table class="data-table" id="topContentTable">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Views</th>
+                                <th>Likes</th>
+                                <th>Rating</th>
+                                <th>Upload Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topContentTableBody">
+                            <!-- Top content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="reports-section" class="content-section" style="display: none;">
+                <h2>📋 System Reports</h2>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="generateSystemReport()">📊 Generate Report</button>
+                    <button class="action-btn btn-success" onclick="exportSystemReport()">📥 Export Report</button>
+                    <button class="action-btn btn-warning" onclick="scheduleReport()">⏰ Schedule Report</button>
+                </div>
+
+                <!-- Report Filters -->
+                <div style="background: #1e293b; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px;">Report Filters</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div class="form-group">
+                            <label style="color: #cbd5f5;">Date Range</label>
+                            <select id="reportDateRange">
+                                <option value="7">Last 7 days</option>
+                                <option value="30">Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                                <option value="365">Last year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #cbd5f5;">Report Type</label>
+                            <select id="reportType">
+                                <option value="all">All Data</option>
+                                <option value="users">User Activity</option>
+                                <option value="content">Content Performance</option>
+                                <option value="chat">Chat Analytics</option>
+                                <option value="system">System Health</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #cbd5f5;">Format</label>
+                            <select id="reportFormat">
+                                <option value="json">JSON</option>
+                                <option value="csv">CSV</option>
+                                <option value="pdf">PDF</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Summary -->
+                <div class="stats-grid" id="reportSummaryGrid">
+                    <!-- Report summary will be loaded here -->
+                </div>
+
+                <!-- Detailed Reports -->
+                <div style="margin-top: 30px;">
+                    <h3>User Activity Report</h3>
+                    <table class="data-table" id="userActivityTable">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Login Count</th>
+                                <th>Last Login</th>
+                                <th>Content Uploaded</th>
+                                <th>Messages Sent</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userActivityTableBody">
+                            <!-- User activity will be loaded here -->
+                        </tbody>
+                    </table>
+
+                    <h3 style="margin-top: 40px;">Content Performance Report</h3>
+                    <table class="data-table" id="contentPerformanceTable">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Author</th>
+                                <th>Views</th>
+                                <th>Likes</th>
+                                <th>Comments</th>
+                                <th>Status</th>
+                                <th>Upload Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contentPerformanceTableBody">
+                            <!-- Content performance will be loaded here -->
+                        </tbody>
+                    </table>
+
+                    <h3 style="margin-top: 40px;">System Health Report</h3>
+                    <table class="data-table" id="systemHealthTable">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Current Value</th>
+                                <th>Status</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody id="systemHealthTableBody">
+                            <!-- System health will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="users-section" class="content-section" style="display: none;">
+                <h2>👥 User Management</h2>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="openUserModal()">Add User</button>
+                </div>
+                <table class="data-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Projects Section -->
+            <div id="projects-section" class="content-section" style="display: none;">
+                <h2>🎬 Project Management</h2>
+                <table class="data-table" id="projectsTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Author</th>
+                            <th>Status</th>
+                            <th>Pinned</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projectsTableBody">
+                        <!-- Projects will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Requests Section -->
+            <div id="requests-section" class="content-section" style="display: none;">
+                <h2>🤝 Request Management</h2>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="openRequestModal()">Send Request</button>
+                </div>
+                <table class="data-table" id="requestsTable">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTableBody">
+                        <!-- Requests will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Chatrooms Section -->
+            <div id="chatrooms-section" class="content-section" style="display: none;">
+                <h2>💬 Chatroom Management</h2>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="openCreateMovieChatroomModal()">🎬 Create Movie Chatroom</button>
+                    <button class="action-btn btn-primary" onclick="loadChatAnalytics()">📊 View Analytics</button>
+                    <button class="action-btn btn-warning" onclick="loadReports()">🚨 View Reports</button>
+                    <button class="action-btn btn-success" onclick="exportAllChatData()">📥 Export All Data</button>
+                </div>
+
+                <!-- Chat Analytics -->
+                <div id="chatAnalytics" style="display: none;">
+                    <h3>Chat Analytics</h3>
+                    <div class="stats-grid" id="chatStatsGrid">
+                        <!-- Analytics will be loaded here -->
+                    </div>
+                    <canvas id="messagesChart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Reports Management -->
+                <div id="reportsSection" style="display: none;">
+                    <h3>🚨 Reported Messages</h3>
+                    <table class="data-table" id="reportsTable">
+                        <thead>
+                            <tr>
+                                <th>Message</th>
+                                <th>Reporter</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody">
+                            <!-- Reports will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Chatrooms Table -->
+                <h3>Active Chatrooms</h3>
+                <table class="data-table" id="chatroomsTable">
+                    <thead>
+                        <tr>
+                            <th>Chatroom Name</th>
+                            <th>Project</th>
+                            <th>Timer</th>
+                            <th>Messages</th>
+                            <th>Participants</th>
+                            <th>Reported</th>
+                            <th>Last Activity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chatroomsTableBody">
+                        <!-- Chatrooms will be loaded here -->
+                    </tbody>
+                </table>
+
+                <!-- Message Viewer Modal -->
+                <div id="messageViewerModal" class="modal">
+                    <div class="modal-content" style="width: 90%; max-width: 1000px;">
+                        <h3>Chat Messages - <span id="projectTitle"></span></h3>
+                        <div class="section-actions">
+                            <button class="action-btn btn-success" onclick="exportChatData()">📥 Export Data</button>
+                            <button class="action-btn btn-danger" onclick="closeMessageViewer()">Close</button>
+                        </div>
+                        <div id="messagesContainer" style="max-height: 500px; overflow-y: auto; background: #0f172a; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                            <!-- Messages will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crowdfunding Section -->
+            <div id="crowdfunding-section" class="content-section" style="display: none;">
+                <h2>💰 Crowdfunding Management</h2>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="loadCrowdfundingStats()">📊 Refresh Stats</button>
+                    <button class="action-btn btn-success" onclick="openCreateCampaignModal()">➕ Create Campaign</button>
+                    <button class="action-btn btn-warning" onclick="exportCrowdfundingData()">📥 Export Data</button>
+                </div>
+
+                <!-- Crowdfunding Stats -->
+                <div class="stats-grid" id="crowdfundingStatsGrid">
+                    <!-- Stats will be loaded here -->
+                </div>
+
+                <!-- Available Scripts for Crowdfunding -->
+                <h3>📜 Available Scripts for Post-Production</h3>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="loadAvailableScripts()">🔄 Refresh Scripts</button>
+                </div>
+                <table class="data-table" id="availableScriptsTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Genre</th>
+                            <th>Rating</th>
+                            <th>Ratings</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="availableScriptsTableBody">
+                        <!-- Available scripts will be loaded here -->
+                    </tbody>
+                </table>
+
+                <!-- Active Crowdfunding Campaigns -->
+                <h3 style="margin-top: 40px;">🎯 Active Campaigns</h3>
+                <table class="data-table" id="crowdfundingCampaignsTable">
+                    <thead>
+                        <tr>
+                            <th>Campaign Title</th>
+                            <th>Script</th>
+                            <th>Goal ($)</th>
+                            <th>Raised ($)</th>
+                            <th>Progress</th>
+                            <th>Backers</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crowdfundingCampaignsTableBody">
+                        <!-- Campaigns will be loaded here -->
+                    </tbody>
+                </table>
+
+                <!-- User Funding Dashboards -->
+                <h3 style="margin-top: 40px;">👥 User Funding Dashboards</h3>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="loadUserFundingDashboards()">🔄 Refresh Dashboards</button>
+                </div>
+                <table class="data-table" id="userFundingTable">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Total Contributed ($)</th>
+                            <th>Campaigns Backed</th>
+                            <th>Campaigns Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userFundingTableBody">
+                        <!-- User funding data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Logs Section -->
+            <div id="logs-section" class="content-section" style="display: none;">
+                <h2>📋 System Logs</h2>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="loadSystemLogs()">🔄 Refresh Logs</button>
+                    <button class="action-btn btn-success" onclick="exportSystemLogs()">📥 Export Logs</button>
+                    <button class="action-btn btn-warning" onclick="clearSystemLogs()">🗑️ Clear Logs</button>
+                </div>
+
+                <!-- Log Filters -->
+                <div style="background: #1e293b; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px;">Log Filters</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div class="form-group">
+                            <label style="color: #cbd5f5;">Log Level</label>
+                            <select id="logLevelFilter">
+                                <option value="all">All Levels</option>
+                                <option value="info">Info</option>
+                                <option value="warning">Warning</option>
+                                <option value="error">Error</option>
+                                <option value="admin">Admin Actions</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #cbd5f5;">Time Range</label>
+                            <select id="logTimeFilter">
+                                <option value="24">Last 24 hours</option>
+                                <option value="168">Last 7 days</option>
+                                <option value="720">Last 30 days</option>
+                                <option value="8760">Last year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #cbd5f5;">Category</label>
+                            <select id="logCategoryFilter">
+                                <option value="all">All Categories</option>
+                                <option value="user">User Activity</option>
+                                <option value="content">Content Management</option>
+                                <option value="admin">Admin Actions</option>
+                                <option value="system">System Events</option>
+                                <option value="security">Security</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logs Display -->
+                <div id="logsContainer" style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 20px; max-height: 600px; overflow-y: auto;">
+                    <div id="logsList">
+                        <!-- Logs will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Log Stats -->
+                <div class="stats-grid" id="logsStatsGrid" style="margin-top: 20px;">
+                    <!-- Log statistics will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Scripts & Ratings Section -->
+            <div id="scripts-ratings-section" class="content-section" style="display: none;">
+                <h2>📜 Scripts & Ratings</h2>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="loadScriptsRatings()">🔄 Refresh Data</button>
+                    <button class="action-btn btn-success" onclick="exportScriptsRatings()">📥 Export Ratings</button>
+                </div>
+
+                <!-- Ratings Stats -->
+                <div class="stats-grid" id="ratingsStatsGrid">
+                    <!-- Stats will be loaded here -->
+                </div>
+
+                <!-- Scripts Ratings Table -->
+                <h3>Scripts with Ratings</h3>
+                <table class="data-table" id="scriptsRatingsTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Genre</th>
+                            <th>Category</th>
+                            <th>Average Rating</th>
+                            <th>Total Ratings</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scriptsRatingsTableBody">
+                        <!-- Scripts ratings will be loaded here -->
+                    </tbody>
+                </table>
+
+                <!-- Rankings Table -->
+                <h3 style="margin-top: 40px;">Top Rated Scripts Rankings</h3>
+                <table class="data-table" id="rankingsTable">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Average Rating</th>
+                            <th>Total Ratings</th>
+                            <th>Score</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingsTableBody">
+                        <!-- Rankings will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Read Lists Section -->
+            <div id="read-lists-section" class="content-section" style="display: none;">
+                <h2>📖 Read Lists Management</h2>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="loadReadLists()">🔄 Refresh Data</button>
+                    <button class="action-btn btn-success" onclick="exportReadLists()">📥 Export Read Lists</button>
+                </div>
+
+                <!-- Read Lists Stats -->
+                <div class="stats-grid" id="readListsStatsGrid">
+                    <!-- Stats will be loaded here -->
+                </div>
+
+                <!-- Read Lists Table -->
+                <h3>Users' Read Lists</h3>
+                <table class="data-table" id="readListsTable">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Scripts in Read List</th>
+                            <th>Total Scripts Read</th>
+                            <th>Last Activity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="readListsTableBody">
+                        <!-- Read lists will be loaded here -->
+                    </tbody>
+                </table>
+
+                <!-- Popular Scripts Table -->
+                <h3 style="margin-top: 40px;">Most Added to Read Lists</h3>
+                <table class="data-table" id="popularScriptsTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Genre</th>
+                            <th>Times Added to Read</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="popularScriptsTableBody">
+                        <!-- Popular scripts will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Post-Production Section -->
+            <div id="post-production-section" class="content-section" style="display: none;">
+                <h2>🎬 Post-Production Management</h2>
+                <div class="section-actions">
+                    <button class="action-btn btn-primary" onclick="loadPostProduction()">🔄 Refresh Data</button>
+                    <button class="action-btn btn-success" onclick="exportPostProduction()">📥 Export Data</button>
+                </div>
+
+                <!-- Post-Production Stats -->
+                <div class="stats-grid" id="postProductionStatsGrid">
+                    <!-- Stats will be loaded here -->
+                </div>
+
+                <!-- Top Scripts for Production -->
+                <h3>Top Rated Scripts for Production</h3>
+                <table class="data-table" id="topScriptsTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Genre</th>
+                            <th>Average Rating</th>
+                            <th>Total Ratings</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topScriptsTableBody">
+                        <!-- Top scripts will be loaded here -->
+                    </tbody>
+                </table>
+
+                <!-- Short Films in Production -->
+                <h3 style="margin-top: 40px;">Short Films in Production</h3>
+                <table class="data-table" id="shortFilmsTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Based on Script</th>
+                            <th>Director</th>
+                            <th>Budget</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="shortFilmsTableBody">
+                        <!-- Short films will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <h3>Add/Edit User</h3>
+            <form id="userForm">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="userName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="userRole">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="action-btn btn-danger" onclick="closeModal('userModal')">Cancel</button>
+                    <button type="submit" class="action-btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Request Modal -->
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <h3>Send Request</h3>
+            <form id="requestForm">
+                <div class="form-group">
+                    <label>User ID</label>
+                    <input type="text" id="requestUserId" required>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="requestType">
+                        <option value="Collaboration">Collaboration</option>
+                        <option value="Feedback">Feedback</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="requestMessage" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Script ID (optional)</label>
+                    <input type="text" id="requestScriptId">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="action-btn btn-danger" onclick="closeModal('requestModal')">Cancel</button>
+                    <button type="submit" class="action-btn btn-success">Send</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Chatroom Modal -->
+    <div id="createChatroomModal" class="modal">
+        <div class="modal-content">
+            <h3>Create Chatroom</h3>
+            <form id="createChatroomForm">
+                <div class="form-group">
+                    <label>Select Project</label>
+                    <select id="chatroomProjectId" required>
+                        <option value="">Loading projects...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Chatroom Name</label>
+                    <input type="text" id="chatroomName" required placeholder="Enter chatroom name">
+                </div>
+                <div class="form-group">
+                    <label>End Time (YYYY-MM-DD HH:MM)</label>
+                    <input type="text" id="chatroomEndTime" placeholder="Optional: Enter end time">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="action-btn btn-danger" onclick="closeModal('createChatroomModal')">Cancel</button>
+                    <button type="submit" class="action-btn btn-success">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Movie Chatroom Modal -->
+    <div id="createMovieChatroomModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; animation: slideIn 0.3s ease-out;">
+            <h3 style="color: #ef4444; margin-bottom: 25px; font-size: 24px; text-align: center;">🎬 Create Movie Chatroom</h3>
+            <form id="createMovieChatroomForm">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="font-weight: 600; color: #cbd5f5; margin-bottom: 8px; display: block;">Movie Name</label>
+                    <input type="text" id="movieChatroomName" required placeholder="Enter movie name for chatroom" style="width: 100%; padding: 12px; border: 2px solid #1e293b; border-radius: 10px; background: #0f172a; color: #fff; font-size: 16px; transition: border-color 0.3s;">
+                    <small style="color: #94a3b8; font-size: 12px; margin-top: 5px; display: block;">Enter the name for the movie chatroom</small>
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="font-weight: 600; color: #cbd5f5; margin-bottom: 8px; display: block;">End Time (Optional)</label>
+                    <input type="datetime-local" id="movieChatroomEndTime" style="width: 100%; padding: 12px; border: 2px solid #1e293b; border-radius: 10px; background: #0f172a; color: #fff; font-size: 16px; transition: border-color 0.3s;">
+                    <small style="color: #94a3b8; font-size: 12px; margin-top: 5px; display: block;">Leave empty for no time limit</small>
+                </div>
+                <div class="modal-actions" style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                    <button type="button" class="action-btn btn-danger" onclick="closeModal('createMovieChatroomModal')" style="padding: 12px 24px; border-radius: 8px; font-weight: 600; transition: all 0.3s;">Cancel</button>
+                    <button type="submit" class="action-btn btn-success" style="padding: 12px 24px; border-radius: 8px; font-weight: 600; background: linear-gradient(135deg, #10b981, #059669); transition: all 0.3s;">Create Movie Chatroom</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Film with Team Modal -->
+    <div id="createFilmModal" class="modal">
+        <div class="modal-content" style="max-width: 800px; animation: slideIn 0.3s ease-out;">
+            <h3 style="color: #ef4444; margin-bottom: 25px; font-size: 24px; text-align: center;">🎬 Create Film with Team</h3>
+            <form id="createFilmForm">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="font-weight: 600; color: #cbd5f5; margin-bottom: 8px; display: block;">Film Title</label>
+                    <input type="text" id="filmTitle" required placeholder="Enter film title" style="width: 100%; padding: 12px; border: 2px solid #1e293b; border-radius: 10px; background: #0f172a; color: #fff; font-size: 16px; transition: border-color 0.3s;">
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: #ef4444; margin-bottom: 15px;">Team Selection</h4>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; color: #cbd5f5; margin-bottom: 8px; display: block;">Director</label>
+                        <select id="filmDirector" style="width: 100%; padding: 12px; border: 2px solid #1e293b; border-radius: 10px; background: #0f172a; color: #fff; font-size: 16px;">
+                            <option value="">Select Director...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; color: #cbd5f5; margin-bottom: 8px; display: block;">Actors (Select multiple)</label>
+                        <select id="filmActors" multiple style="width: 100%; padding: 12px; border: 2px solid #1e293b; border-radius: 10px; background: #0f172a; color: #fff; font-size: 16px; min-height: 120px;">
+                        </select>
+                        <small style="color: #94a3b8; font-size: 12px; margin-top: 5px; display: block;">Hold Ctrl/Cmd to select multiple actors</small>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: #ef4444; margin-bottom: 15px;">Budget & Production</h4>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; color: #cbd5f5; margin-bottom: 8px; display: block;">Budget ($)</label>
+                        <input type="number" id="filmBudget" placeholder="Enter budget amount" style="width: 100%; padding: 12px; border: 2px solid #1e293b; border-radius: 10px; background: #0f172a; color: #fff; font-size: 16px;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: #ef4444; margin-bottom: 15px;">Additional Options</h4>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; color: #cbd5f5; cursor: pointer;">
+                            <input type="checkbox" id="sendApproval" checked style="margin-right: 8px;">
+                            Send approval request to scriptwriter
+                        </label>
+                        <label style="display: flex; align-items: center; color: #cbd5f5; cursor: pointer;">
+                            <input type="checkbox" id="createChatroom" checked style="margin-right: 8px;">
+                            Create personal project chatroom
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-actions" style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                    <button type="button" class="action-btn btn-danger" onclick="closeModal('createFilmModal')" style="padding: 12px 24px; border-radius: 8px; font-weight: 600; transition: all 0.3s;">Cancel</button>
+                    <button type="submit" class="action-btn btn-success" style="padding: 12px 24px; border-radius: 8px; font-weight: 600; background: linear-gradient(135deg, #10b981, #059669); transition: all 0.3s;">Create Film</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Crowdfunding Campaign Modal -->
+    <div id="createCampaignModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; animation: slideIn 0.3s ease-out;">
+            <h3 style="color: #ef4444; margin-bottom: 25px; font-size: 24px; text-align: center;">💰 Create Crowdfunding Campaign</h3>
+            <form id="createCampaignForm">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="font-weight: 600; color: #cbd5f5; margin-bottom: 8px; display: block;">Campaign Title</label>
+                    <input type="text" id="campaignTitle" required placeholder="Enter campaign title" style="width: 100%; padding: 12px; border: 2px solid #1e293b; border-radius: 10px; background: #0f172a; color: #fff; font-size: 16px; transition: border-color 0.3s;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="font-weight: 600; color: #cbd5f5; margin-bottom: 8px; display: block;">Description</label>
+                    <textarea id="campaignDescription" placeholder="Describe your campaign and why people should fund it" style="width: 100%; padding: 12px; border: 2px solid #1e293b; border-radius: 10px; background: #0f172a; color: #fff; font-size: 16px; min-height: 100px; resize: vertical;"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="font-weight: 600; color: #cbd5f5; margin-bottom: 8px; display: block;">Funding Goal ($)</label>
+                    <input type="number" id="campaignGoalAmount" required placeholder="Enter funding goal amount" style="width: 100%; padding: 12px; border: 2px solid #1e293b; border-radius: 10px; background: #0f172a; color: #fff; font-size: 16px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="font-weight: 600; color: #cbd5f5; margin-bottom: 8px; display: block;">End Date (Optional)</label>
+                    <input type="datetime-local" id="campaignEndDate" style="width: 100%; padding: 12px; border: 2px solid #1e293b; border-radius: 10px; background: #0f172a; color: #fff; font-size: 16px;">
+                    <small style="color: #94a3b8; font-size: 12px; margin-top: 5px; display: block;">Leave empty for no time limit</small>
+                </div>
+
+                <div class="modal-actions" style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                    <button type="button" class="action-btn btn-danger" onclick="closeModal('createCampaignModal')" style="padding: 12px 24px; border-radius: 8px; font-weight: 600; transition: all 0.3s;">Cancel</button>
+                    <button type="submit" class="action-btn btn-success" style="padding: 12px 24px; border-radius: 8px; font-weight: 600; background: linear-gradient(135deg, #10b981, #059669); transition: all 0.3s;">Create Campaign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 'dashboard';
+        const token = localStorage.getItem('token');
+
+        // Check admin authentication
+        async function checkAuth() {
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:3000/api/auth/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const user = await res.json();
+                    if (!user.isAdmin) {
+                        alert('Access denied. Admin privileges required.');
+                        window.location.href = 'dashboard.html';
+                    }
+                } else {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                }
+            } catch (err) {
+                console.error('Auth check error:', err);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Load dashboard stats
+        async function loadStats() {
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const stats = await res.json();
+                    document.getElementById('statsGrid').innerHTML = `
+                        <div class="stat-card">
+                            <h3>${stats.totalUsers}</h3>
+                            <p>Total Users</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${stats.totalScripts}</h3>
+                            <p>Total Scripts</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${stats.totalFilms}</h3>
+                            <p>Total Films</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${stats.pendingApprovals}</h3>
+                            <p>Pending Approvals</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${stats.activeChatrooms}</h3>
+                            <p>Active Chatrooms</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error('Error loading stats:', err);
+            }
+        }
+
+        // Load users
+        async function loadUsers() {
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const users = await res.json();
+                    const tbody = document.getElementById('usersTableBody');
+                    tbody.innerHTML = users.map(user => `
+                        <tr>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${user.isAdmin ? 'Admin' : 'User'}</td>
+                            <td>
+                                <span class="status-badge ${user.isBlocked ? 'status-rejected' : 'status-approved'}">
+                                    ${user.isBlocked ? 'Blocked' : 'Active'}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="action-btn btn-warning" onclick="toggleUserStatus('${user._id}', ${user.isBlocked})">
+                                    ${user.isBlocked ? 'Unblock' : 'Block'}
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading users:', err);
+            }
+        }
+
+        // Load projects
+        async function loadProjects() {
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/projects', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const allProjects = [
+                        ...data.scripts.map(s => ({ ...s, type: 'script' })),
+                        ...data.films.map(f => ({ ...f, type: 'film' }))
+                    ];
+
+                    const tbody = document.getElementById('projectsTableBody');
+                    tbody.innerHTML = allProjects.map(project => `
+                        <tr>
+                            <td>${project.title}</td>
+                            <td>${project.type}</td>
+                            <td>${project.uploadedBy?.name || 'Unknown'}</td>
+                            <td>
+                                <span class="status-badge status-${project.status}">
+                                    ${project.status}
+                                </span>
+                            </td>
+                            <td>${project.pinned ? 'Yes' : 'No'}</td>
+                            <td>
+                                ${project.status === 'pending' ? `
+                                    <button class="action-btn btn-success" onclick="approveProject('${project._id}', '${project.type}')">Approve</button>
+                                    <button class="action-btn btn-danger" onclick="rejectProject('${project._id}', '${project.type}')">Reject</button>
+                                ` : ''}
+                                <button class="action-btn btn-primary" onclick="togglePin('${project._id}', '${project.type}', ${project.pinned})">
+                                    ${project.pinned ? 'Unpin' : 'Pin'}
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading projects:', err);
+            }
+        }
+
+        // Load requests
+        async function loadRequests() {
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/requests', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const requests = await res.json();
+                    const tbody = document.getElementById('requestsTableBody');
+                    tbody.innerHTML = requests.map(request => `
+                        <tr>
+                            <td>${request.userId?.name || 'Unknown'}</td>
+                            <td>${request.type}</td>
+                            <td>${request.message}</td>
+                            <td>
+                                <span class="status-badge status-${request.status}">
+                                    ${request.status}
+                                </span>
+                            </td>
+                            <td>
+                                ${request.status === 'pending' ? `
+                                    <button class="action-btn btn-success" onclick="updateRequest('${request._id}', 'accepted')">Accept</button>
+                                    <button class="action-btn btn-danger" onclick="updateRequest('${request._id}', 'rejected')">Reject</button>
+                                ` : ''}
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading requests:', err);
+            }
+        }
+
+        // Load chatrooms
+        async function loadChatrooms() {
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/chatrooms', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const chatrooms = await res.json();
+                    const tbody = document.getElementById('chatroomsTableBody');
+                    tbody.innerHTML = chatrooms.map(room => `
+                        <tr>
+                            <td>${room.chatName || room.title}</td>
+                            <td>${room.title}</td>
+                            <td>${room.chatEndTime ? new Date(room.chatEndTime).toLocaleString() : 'No timer set'}</td>
+                            <td>${room.messageCount}</td>
+                            <td>${room.participantCount}</td>
+                            <td><span class="status-badge ${room.reportedCount > 0 ? 'status-rejected' : 'status-approved'}">${room.reportedCount || 0}</span></td>
+                            <td>${new Date(room.lastMessageTime).toLocaleDateString()}</td>
+                            <td>
+                                <button class="action-btn btn-primary" onclick="viewMessages('${room.projectId}', '${room.chatName || room.title}')">View Messages</button>
+                                <button class="action-btn btn-warning" onclick="setChatTimer('${room.projectId}')">Set Timer</button>
+                                <button class="action-btn btn-danger" onclick="endChatroom('${room.projectId}')">End Chat</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading chatrooms:', err);
+            }
+        }
+
+        // Load chat analytics
+        async function loadChatAnalytics() {
+            try {
+                const res = await fetch('http://localhost:3000/api/chat/admin/analytics', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const analytics = await res.json();
+                    document.getElementById('chatStatsGrid').innerHTML = `
+                        <div class="stat-card">
+                            <h3>${analytics.totalMessages}</h3>
+                            <p>Total Messages</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${analytics.totalReports}</h3>
+                            <p>Total Reports</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${analytics.activeChatrooms}</h3>
+                            <p>Active Chatrooms</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${analytics.blockedUsers}</h3>
+                            <p>Blocked Users</p>
+                        </div>
+                    `;
+
+                    // Show chart
+                    document.getElementById('chatAnalytics').style.display = 'block';
+                    document.getElementById('reportsSection').style.display = 'none';
+
+                    // Simple chart rendering (you might want to use Chart.js for better charts)
+                    const canvas = document.getElementById('messagesChart');
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw simple bar chart
+                    const data = analytics.messagesPerDay;
+                    const barWidth = canvas.width / data.length;
+                    const maxCount = Math.max(...data.map(d => d.count));
+
+                    data.forEach((day, index) => {
+                        const barHeight = (day.count / maxCount) * (canvas.height - 40);
+                        ctx.fillStyle = '#3b82f6';
+                        ctx.fillRect(index * barWidth, canvas.height - barHeight - 20, barWidth - 2, barHeight);
+
+                        // Label
+                        ctx.fillStyle = '#fff';
+                        ctx.font = '10px Arial';
+                        ctx.fillText(day._id, index * barWidth, canvas.height - 5);
+                    });
+                }
+            } catch (err) {
+                console.error('Error loading analytics:', err);
+            }
+        }
+
+        // Load reports
+        async function loadReports() {
+            try {
+                const res = await fetch('http://localhost:3000/api/chat/admin/reports', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const reports = await res.json();
+                    const tbody = document.getElementById('reportsTableBody');
+                    tbody.innerHTML = reports.map(report => `
+                        <tr>
+                            <td>${report.messageId?.message || 'Message deleted'}</td>
+                            <td>${report.reporter.name} (${report.reporter.email})</td>
+                            <td>${report.reason}</td>
+                            <td>
+                                <span class="status-badge status-${report.status}">
+                                    ${report.status}
+                                </span>
+                            </td>
+                            <td>
+                                ${report.status === 'pending' ? `
+                                    <button class="action-btn btn-success" onclick="updateReportStatus('${report._id}', 'resolved')">Resolve</button>
+                                    <button class="action-btn btn-danger" onclick="updateReportStatus('${report._id}', 'reviewed')">Mark Reviewed</button>
+                                ` : ''}
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    document.getElementById('reportsSection').style.display = 'block';
+                    document.getElementById('chatAnalytics').style.display = 'none';
+                }
+            } catch (err) {
+                console.error('Error loading reports:', err);
+            }
+        }
+
+        // Update report status
+        async function updateReportStatus(reportId, status) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/chat/admin/reports/${reportId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if (res.ok) {
+                    loadReports();
+                } else {
+                    alert('Failed to update report status');
+                }
+            } catch (err) {
+                console.error('Error updating report:', err);
+            }
+        }
+
+        // View messages for a project
+        async function viewMessages(projectId, title) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/chat/${projectId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const messages = await res.json();
+                    document.getElementById('projectTitle').textContent = title;
+                    const container = document.getElementById('messagesContainer');
+
+                    container.innerHTML = messages.map(msg => `
+                        <div class="message ${msg.blocked ? 'blocked' : ''}" style="margin-bottom: 10px; padding: 10px; border: 1px solid #1e293b; border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <strong>${msg.sender.name} (${msg.role})</strong>
+                                <small>${new Date(msg.createdAt).toLocaleString()}</small>
+                            </div>
+                            <div>${msg.message}</div>
+                            ${msg.edited ? '<small style="color: #94a3b8;">(edited)</small>' : ''}
+                            ${msg.reported ? '<small style="color: #f59e0b;">⚠️ Reported</small>' : ''}
+                            <div style="margin-top: 5px;">
+                                <button class="action-btn btn-warning" onclick="adminEditMessage('${msg._id}', '${msg.message}')">Edit</button>
+                                <button class="action-btn btn-danger" onclick="adminDeleteMessage('${msg._id}')">Delete</button>
+                                ${msg.pinned ? '<button class="action-btn btn-primary" onclick="togglePinMessage(\'' + msg._id + '\', false)">Unpin</button>' : '<button class="action-btn btn-primary" onclick="togglePinMessage(\'' + msg._id + '\', true)">Pin</button>'}
+                            </div>
+                        </div>
+                    `).join('');
+
+                    document.getElementById('messageViewerModal').style.display = 'flex';
+                }
+            } catch (err) {
+                console.error('Error loading messages:', err);
+            }
+        }
+
+        // Admin edit message
+        async function adminEditMessage(messageId, currentMessage) {
+            const newMessage = prompt('Edit message:', currentMessage);
+            if (newMessage && newMessage !== currentMessage) {
+                try {
+                    const res = await fetch(`http://localhost:3000/api/chat/admin/${messageId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ message: newMessage })
+                    });
+
+                    if (res.ok) {
+                        // Refresh messages
+                        const modal = document.getElementById('messageViewerModal');
+                        const title = document.getElementById('projectTitle').textContent;
+                        const projectId = modal.querySelector('button[onclick*="exportChatData"]').getAttribute('onclick').match(/'([^']+)'/)[1];
+                        viewMessages(projectId, title);
+                    } else {
+                        alert('Failed to edit message');
+                    }
+                } catch (err) {
+                    console.error('Error editing message:', err);
+                }
+            }
+        }
+
+        // Admin delete message
+        async function adminDeleteMessage(messageId) {
+            if (confirm('Delete this message globally?')) {
+                try {
+                    const res = await fetch(`http://localhost:3000/api/chat/admin/${messageId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (res.ok) {
+                        // Refresh messages
+                        const modal = document.getElementById('messageViewerModal');
+                        const title = document.getElementById('projectTitle').textContent;
+                        const projectId = modal.querySelector('button[onclick*="exportChatData"]').getAttribute('onclick').match(/'([^']+)'/)[1];
+                        viewMessages(projectId, title);
+                    } else {
+                        alert('Failed to delete message');
+                    }
+                } catch (err) {
+                    console.error('Error deleting message:', err);
+                }
+            }
+        }
+
+        // Toggle pin message
+        async function togglePinMessage(messageId, pinned) {
+            try {
+                // This would need Socket.io integration for real-time pinning
+                alert('Pin functionality requires Socket.io integration');
+            } catch (err) {
+                console.error('Error toggling pin:', err);
+            }
+        }
+
+        // Export chat data for a project
+        async function exportChatData() {
+            try {
+                const projectId = document.getElementById('projectTitle').textContent.split(' - ')[1];
+                const res = await fetch(`http://localhost:3000/api/chat/admin/export/${projectId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const csvContent = 'data:text/csv;charset=utf-8,' +
+                        'Timestamp,Sender,Email,Role,Message,Type,Edited,Reported,Blocked\n' +
+                        data.map(row => `${row.timestamp},${row.sender},${row.email},${row.role},"${row.message}",${row.type},${row.edited},${row.reported},${row.blocked}`).join('\n');
+
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement('a');
+                    link.setAttribute('href', encodedUri);
+                    link.setAttribute('download', `chat_export_${projectId}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } catch (err) {
+                console.error('Error exporting data:', err);
+            }
+        }
+
+        // Save chat history for a project
+        async function saveChatHistory(projectId, title) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/chat/admin/export/${projectId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const csvContent = 'data:text/csv;charset=utf-8,' +
+                        'Timestamp,Sender,Email,Role,Message,Type,Edited,Reported,Blocked\n' +
+                        data.map(row => `${row.timestamp},${row.sender},${row.email},${row.role},"${row.message}",${row.type},${row.edited},${row.reported},${row.blocked}`).join('\n');
+
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement('a');
+                    link.setAttribute('href', encodedUri);
+                    link.setAttribute('download', `chat_history_${title.replace(/\s+/g, '_')}_${projectId}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    alert('Chat history saved successfully');
+                } else {
+                    alert('Failed to save chat history');
+                }
+            } catch (err) {
+                console.error('Error saving chat history:', err);
+            }
+        }
+
+        // Export all chat data
+        async function exportAllChatData() {
+            // This would require aggregating all chat data
+            alert('Export all functionality would require additional backend implementation');
+        }
+
+        // Close message viewer
+        function closeMessageViewer() {
+            document.getElementById('messageViewerModal').style.display = 'none';
+        }
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            document.getElementById(sectionName + '-section').style.display = 'block';
+
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            currentSection = sectionName;
+
+            // Load data for the section
+            switch (sectionName) {
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'projects':
+                    loadProjects();
+                    break;
+                case 'requests':
+                    loadRequests();
+                    break;
+                case 'chatrooms':
+                    loadChatrooms();
+                    break;
+            }
+        }
+
+        // User management functions
+        async function toggleUserStatus(userId, currentlyBlocked) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ isBlocked: !currentlyBlocked })
+                });
+
+                if (res.ok) {
+                    loadUsers();
+                } else {
+                    alert('Failed to update user status');
+                }
+            } catch (err) {
+                console.error('Error updating user:', err);
+            }
+        }
+
+        // Project management functions
+        async function approveProject(projectId, type) {
+            await updateProjectStatus(projectId, type, 'approved');
+        }
+
+        async function rejectProject(projectId, type) {
+            await updateProjectStatus(projectId, type, 'rejected');
+        }
+
+        async function updateProjectStatus(projectId, type, status) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/projects/${projectId}/${type}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if (res.ok) {
+                    loadProjects();
+                    loadStats(); // Refresh stats
+                } else {
+                    alert('Failed to update project status');
+                }
+            } catch (err) {
+                console.error('Error updating project:', err);
+            }
+        }
+
+        async function togglePin(projectId, type, currentlyPinned) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/projects/${projectId}/${type}/pin`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ pinned: !currentlyPinned })
+                });
+
+                if (res.ok) {
+                    loadProjects();
+                } else {
+                    alert('Failed to update pin status');
+                }
+            } catch (err) {
+                console.error('Error updating pin:', err);
+            }
+        }
+
+        // Request management functions
+        async function updateRequest(requestId, status) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/requests/${requestId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if (res.ok) {
+                    loadRequests();
+                } else {
+                    alert('Failed to update request');
+                }
+            } catch (err) {
+                console.error('Error updating request:', err);
+            }
+        }
+
+        // Chatroom management functions
+        async function setChatTimer(projectId) {
+            const endTime = prompt('Enter end time (YYYY-MM-DD HH:MM):');
+            if (!endTime) return;
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/chatrooms/${projectId}/timer`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ endTime })
+                });
+
+                if (res.ok) {
+                    alert('Timer set successfully');
+                    loadChatrooms();
+                } else {
+                    alert('Failed to set timer');
+                }
+            } catch (err) {
+                console.error('Error setting timer:', err);
+            }
+        }
+
+        async function endChatroom(projectId) {
+            if (!confirm('Are you sure you want to end this chatroom? All messages will be deleted.')) return;
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/chatrooms/${projectId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    loadChatrooms();
+                    loadStats(); // Refresh stats
+                } else {
+                    alert('Failed to end chatroom');
+                }
+            } catch (err) {
+                console.error('Error ending chatroom:', err);
+            }
+        }
+
+        // Modal functions
+        function openUserModal() {
+            document.getElementById('userModal').style.display = 'flex';
+        }
+
+        function openRequestModal() {
+            document.getElementById('requestModal').style.display = 'flex';
+        }
+
+        // Load projects for chatroom creation
+        async function loadProjectsForChatroom() {
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/projects', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const allProjects = [
+                        ...data.scripts.map(s => ({ ...s, type: 'script' })),
+                        ...data.films.map(f => ({ ...f, type: 'film' }))
+                    ];
+
+                    const select = document.getElementById('chatroomProjectId');
+                    select.innerHTML = '<option value="">Select a project...</option>' +
+                        allProjects.map(project => `<option value="${project._id}">${project.title} (${project.type})</option>`).join('');
+                }
+            } catch (err) {
+                console.error('Error loading projects for chatroom:', err);
+            }
+        }
+
+        function openCreateChatroomModal() {
+            loadProjectsForChatroom();
+            document.getElementById('createChatroomModal').style.display = 'flex';
+        }
+
+        function openCreateMovieChatroomModal() {
+            document.getElementById('createMovieChatroomModal').style.display = 'flex';
+        }
+
+        function openCreateFilmModal(scriptId) {
+            // Store the script ID for later use
+            window.selectedScriptId = scriptId;
+
+            // Load users for director and actors selection
+            loadUsersForFilmCreation();
+
+            document.getElementById('createFilmModal').style.display = 'flex';
+        }
+
+        async function loadUsersForFilmCreation() {
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const users = await res.json();
+
+                    // Populate director select
+                    const directorSelect = document.getElementById('filmDirector');
+                    directorSelect.innerHTML = '<option value="">Select Director...</option>' +
+                        users.filter(user => !user.isBlocked).map(user =>
+                            `<option value="${user._id}">${user.name} (${user.email})</option>`
+                        ).join('');
+
+                    // Populate actors select
+                    const actorsSelect = document.getElementById('filmActors');
+                    actorsSelect.innerHTML = users.filter(user => !user.isBlocked).map(user =>
+                        `<option value="${user._id}">${user.name} (${user.email})</option>`
+                    ).join('');
+                }
+            } catch (err) {
+                console.error('Error loading users for film creation:', err);
+            }
+        }
+
+        async function createFilm() {
+            const scriptId = window.selectedScriptId;
+            const title = document.getElementById('filmTitle').value;
+            const director = document.getElementById('filmDirector').value;
+            const actors = Array.from(document.getElementById('filmActors').selectedOptions).map(option => option.value);
+            const budget = document.getElementById('filmBudget').value;
+            const sendApproval = document.getElementById('sendApproval').checked;
+            const createChatroom = document.getElementById('createChatroom').checked;
+
+            if (!title || !director) {
+                alert('Please fill in all required fields (Title and Director)');
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/post-production/create-film', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        scriptId,
+                        title,
+                        director,
+                        actors,
+                        budget: budget ? parseFloat(budget) : 0,
+                        sendApproval,
+                        createChatroom
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    alert('Film created successfully!');
+                    closeModal('createFilmModal');
+                    loadPostProduction(); // Refresh the post-production list
+                } else {
+                    const error = await res.json();
+                    alert('Failed to create film: ' + error.message);
+                }
+            } catch (err) {
+                console.error('Error creating film:', err);
+                alert('Error creating film');
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Form submission for creating film with team
+        document.getElementById('createFilmForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const scriptId = window.selectedScriptId;
+            const title = document.getElementById('filmTitle').value;
+            const director = document.getElementById('filmDirector').value;
+            const actors = Array.from(document.getElementById('filmActors').selectedOptions).map(option => option.value);
+            const budget = document.getElementById('filmBudget').value;
+            const sendApproval = document.getElementById('sendApproval').checked;
+            const createChatroom = document.getElementById('createChatroom').checked;
+
+            try {
+                // Create the film
+                const filmData = {
+                    scriptId,
+                    title,
+                    director,
+                    actors,
+                    budget: budget ? parseFloat(budget) : 0,
+                    sendApproval,
+                    createChatroom
+                };
+
+                console.log('Creating film with data:', filmData);
+
+                const res = await fetch('http://localhost:3000/api/admin/post-production/create-film-with-team', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(filmData)
+                });
+
+                if (res.ok) {
+                    const result = await res.json();
+                    console.log('Film created successfully:', result);
+
+                    // Close modal and reset form
+                    closeModal('createFilmModal');
+                    document.getElementById('createFilmForm').reset();
+
+                    // Refresh post-production data
+                    loadPostProduction();
+
+                    alert('Film created successfully with team and options!');
+                } else {
+                    const error = await res.json();
+                    alert('Failed to create film: ' + (error.message || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Error creating film:', err);
+                alert('Network error: ' + err.message);
+            }
+        });
+
+        // Form submissions
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            // User creation logic would go here
+            alert('User creation not implemented in this demo');
+            closeModal('userModal');
+        });
+
+        document.getElementById('requestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                userId: document.getElementById('requestUserId').value,
+                type: document.getElementById('requestType').value,
+                message: document.getElementById('requestMessage').value,
+                scriptId: document.getElementById('requestScriptId').value || undefined
+            };
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/requests', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (res.ok) {
+                    loadRequests();
+                    closeModal('requestModal');
+                    document.getElementById('requestForm').reset();
+                } else {
+                    alert('Failed to send request');
+                }
+            } catch (err) {
+                console.error('Error sending request:', err);
+            }
+        });
+
+        document.getElementById('createChatroomForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                projectId: document.getElementById('chatroomProjectId').value,
+                name: document.getElementById('chatroomName').value,
+                endTime: document.getElementById('chatroomEndTime').value || undefined
+            };
+
+            console.log('Frontend: Sending chatroom creation request:', formData);
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/chatrooms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                console.log('Frontend: Response status:', res.status);
+                const responseData = await res.json();
+                console.log('Frontend: Response data:', responseData);
+
+                if (res.ok) {
+                    loadChatrooms();
+                    closeModal('createChatroomModal');
+                    document.getElementById('createChatroomForm').reset();
+                    alert('Chatroom created successfully');
+                } else {
+                    alert('Failed to create chatroom: ' + (responseData.message || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Frontend: Error creating chatroom:', err);
+                alert('Network error: ' + err.message);
+            }
+        });
+
+        document.getElementById('createMovieChatroomForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                movieName: document.getElementById('movieChatroomName').value,
+                endTime: document.getElementById('movieChatroomEndTime').value || undefined
+            };
+
+            console.log('Frontend: Sending movie chatroom creation request:', formData);
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/movie-chatrooms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                console.log('Frontend: Response status:', res.status);
+                const responseData = await res.json();
+                console.log('Frontend: Response data:', responseData);
+
+                if (res.ok) {
+                    loadChatrooms(); // Refresh chatrooms list
+                    closeModal('createMovieChatroomModal');
+                    document.getElementById('createMovieChatroomForm').reset();
+                    alert('Movie chatroom created successfully');
+                } else {
+                    alert('Failed to create movie chatroom: ' + (responseData.message || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Frontend: Error creating movie chatroom:', err);
+                alert('Network error: ' + err.message);
+            }
+        });
+
+        document.getElementById('createCampaignForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            createCampaign();
+        });
+
+        // Load platform analytics
+        async function loadPlatformAnalytics() {
+            try {
+                console.log('Loading analytics with token:', token ? 'Token present' : 'No token');
+                const res = await fetch('http://localhost:3000/api/admin/analytics', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                console.log('Analytics response status:', res.status);
+
+                if (res.ok) {
+                    const analytics = await res.json();
+                    console.log('Analytics data received:', analytics);
+
+                    // Update analytics grid
+                    document.getElementById('analyticsGrid').innerHTML = `
+                        <div class="stat-card">
+                            <h3>${analytics.totalUsers}</h3>
+                            <p>Total Registered Users</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${analytics.activeUsers}</h3>
+                            <p>Active Users (Last 30 days)</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${analytics.totalContent}</h3>
+                            <p>Total Content Items</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${analytics.totalViews}</h3>
+                            <p>Total Content Views</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${analytics.totalMessages}</h3>
+                            <p>Total Chat Messages</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${analytics.averageRating}</h3>
+                            <p>Average Content Rating</p>
+                        </div>
+                    `;
+
+                    // Draw user growth chart
+                    drawUserGrowthChart(analytics.userGrowthData);
+
+                    // Draw content trends chart
+                    drawContentTrendsChart(analytics.contentTrendsData);
+
+                    // Draw chat activity chart
+                    drawChatActivityChart(analytics.chatActivityData);
+
+                    // Load top content
+                    loadTopContent();
+
+                } else {
+                    const errorText = await res.text();
+                    console.error('Analytics error response:', errorText);
+                    alert('Failed to load analytics data: ' + errorText);
+                }
+            } catch (err) {
+                console.error('Error loading analytics:', err);
+                alert('Error loading analytics data: ' + err.message);
+            }
+        }
+
+        // Draw user growth chart
+        function drawUserGrowthChart(data) {
+            const canvas = document.getElementById('userGrowthChart');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!data || data.length === 0) {
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '16px Arial';
+                ctx.fillText('No data available', 20, 50);
+                return;
+            }
+
+            const barWidth = canvas.width / data.length;
+            const maxUsers = Math.max(...data.map(d => d.users));
+
+            data.forEach((point, index) => {
+                const barHeight = (point.users / maxUsers) * (canvas.height - 60);
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(index * barWidth + 2, canvas.height - barHeight - 30, barWidth - 4, barHeight);
+
+                // Label
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px Arial';
+                ctx.fillText(point.month, index * barWidth + 5, canvas.height - 10);
+            });
+        }
+
+        // Draw content trends chart
+        function drawContentTrendsChart(data) {
+            const canvas = document.getElementById('contentTrendsChart');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!data || data.length === 0) {
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '16px Arial';
+                ctx.fillText('No data available', 20, 50);
+                return;
+            }
+
+            const barWidth = canvas.width / data.length;
+            const maxUploads = Math.max(...data.map(d => d.uploads));
+
+            data.forEach((point, index) => {
+                const barHeight = (point.uploads / maxUploads) * (canvas.height - 60);
+                ctx.fillStyle = '#3b82f6';
+                ctx.fillRect(index * barWidth + 2, canvas.height - barHeight - 30, barWidth - 4, barHeight);
+
+                // Label
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px Arial';
+                ctx.fillText(point.month, index * barWidth + 5, canvas.height - 10);
+            });
+        }
+
+        // Draw chat activity chart
+        function drawChatActivityChart(data) {
+            const canvas = document.getElementById('chatActivityChart');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!data || data.length === 0) {
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '16px Arial';
+                ctx.fillText('No data available', 20, 50);
+                return;
+            }
+
+            const barWidth = canvas.width / data.length;
+            const maxMessages = Math.max(...data.map(d => d.messages));
+
+            data.forEach((point, index) => {
+                const barHeight = (point.messages / maxMessages) * (canvas.height - 60);
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(index * barWidth + 2, canvas.height - barHeight - 30, barWidth - 4, barHeight);
+
+                // Label
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px Arial';
+                ctx.fillText(point.day, index * barWidth + 5, canvas.height - 10);
+            });
+        }
+
+        // Load top performing content
+        async function loadTopContent() {
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/top-content', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const topContent = await res.json();
+                    const tbody = document.getElementById('topContentTableBody');
+                    tbody.innerHTML = topContent.map(content => `
+                        <tr>
+                            <td>${content.title}</td>
+                            <td>${content.type}</td>
+                            <td>${content.views || 0}</td>
+                            <td>${content.likes || 0}</td>
+                            <td>${content.rating || 'N/A'}</td>
+                            <td>${new Date(content.createdAt).toLocaleDateString()}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading top content:', err);
+            }
+        }
+
+        // Export analytics data
+        async function exportAnalyticsData() {
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/analytics/export', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const csvContent = 'data:text/csv;charset=utf-8,' +
+                        'Metric,Value,Date\n' +
+                        Object.entries(data).map(([key, value]) => `${key},${value},`).join('\n');
+
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement('a');
+                    link.setAttribute('href', encodedUri);
+                    link.setAttribute('download', `analytics_export_${new Date().toISOString().split('T')[0]}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    alert('Analytics data exported successfully');
+                } else {
+                    alert('Failed to export analytics data');
+                }
+            } catch (err) {
+                console.error('Error exporting analytics:', err);
+                alert('Error exporting analytics data');
+            }
+        }
+
+        // Generate system report
+        async function generateSystemReport() {
+            const dateRange = document.getElementById('reportDateRange').value;
+            const reportType = document.getElementById('reportType').value;
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/reports/generate?range=${dateRange}&type=${reportType}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const reportData = await res.json();
+
+                    // Update report summary
+                    document.getElementById('reportSummaryGrid').innerHTML = `
+                        <div class="stat-card">
+                            <h3>${reportData.totalUsers}</h3>
+                            <p>Total Users</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${reportData.totalContent}</h3>
+                            <p>Total Content</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${reportData.totalMessages}</h3>
+                            <p>Total Messages</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${reportData.totalReports}</h3>
+                            <p>Total Reports</p>
+                        </div>
+                    `;
+
+                    // Load detailed report tables
+                    loadUserActivityReport(dateRange);
+                    loadContentPerformanceReport(dateRange);
+                    loadSystemHealthReport();
+
+                    alert('System report generated successfully');
+                } else {
+                    alert('Failed to generate system report');
+                }
+            } catch (err) {
+                console.error('Error generating report:', err);
+                alert('Error generating system report');
+            }
+        }
+
+        // Load user activity report
+        async function loadUserActivityReport(dateRange) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/reports/users?range=${dateRange}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const users = await res.json();
+                    const tbody = document.getElementById('userActivityTableBody');
+                    tbody.innerHTML = users.map(user => `
+                        <tr>
+                            <td>${user.name}</td>
+                            <td>${user.loginCount || 0}</td>
+                            <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
+                            <td>${user.contentCount || 0}</td>
+                            <td>${user.messageCount || 0}</td>
+                            <td>
+                                <span class="status-badge ${user.isBlocked ? 'status-rejected' : 'status-approved'}">
+                                    ${user.isBlocked ? 'Blocked' : 'Active'}
+                                </span>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading user activity report:', err);
+            }
+        }
+
+        // Load content performance report
+        async function loadContentPerformanceReport(dateRange) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/reports/content?range=${dateRange}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const content = await res.json();
+                    const tbody = document.getElementById('contentPerformanceTableBody');
+                    tbody.innerHTML = content.map(item => `
+                        <tr>
+                            <td>${item.title}</td>
+                            <td>${item.type}</td>
+                            <td>${item.author}</td>
+                            <td>${item.views || 0}</td>
+                            <td>${item.likes || 0}</td>
+                            <td>${item.comments || 0}</td>
+                            <td>
+                                <span class="status-badge status-${item.status}">
+                                    ${item.status}
+                                </span>
+                            </td>
+                            <td>${new Date(item.createdAt).toLocaleDateString()}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading content performance report:', err);
+            }
+        }
+
+        // Load system health report
+        async function loadSystemHealthReport() {
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/reports/system-health', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const health = await res.json();
+                    const tbody = document.getElementById('systemHealthTableBody');
+                    tbody.innerHTML = health.map(metric => `
+                        <tr>
+                            <td>${metric.name}</td>
+                            <td>${metric.value}</td>
+                            <td>
+                                <span class="status-badge ${metric.status === 'good' ? 'status-approved' : metric.status === 'warning' ? 'status-pending' : 'status-rejected'}">
+                                    ${metric.status}
+                                </span>
+                            </td>
+                            <td>${new Date(metric.lastUpdated).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading system health report:', err);
+            }
+        }
+
+        // Export system report
+        async function exportSystemReport() {
+            const dateRange = document.getElementById('reportDateRange').value;
+            const reportType = document.getElementById('reportType').value;
+            const format = document.getElementById('reportFormat').value;
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/reports/export?range=${dateRange}&type=${reportType}&format=${format}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    if (format === 'json') {
+                        const data = await res.json();
+                        const jsonContent = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
+                        const link = document.createElement('a');
+                        link.setAttribute('href', jsonContent);
+                        link.setAttribute('download', `system_report_${new Date().toISOString().split('T')[0]}.json`);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    } else {
+                        // For CSV, the backend should return CSV content
+                        const csvContent = await res.text();
+                        const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
+                        const link = document.createElement('a');
+                        link.setAttribute('href', encodedUri);
+                        link.setAttribute('download', `system_report_${new Date().toISOString().split('T')[0]}.csv`);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    alert('System report exported successfully');
+                } else {
+                    alert('Failed to export system report');
+                }
+            } catch (err) {
+                console.error('Error exporting report:', err);
+                alert('Error exporting system report');
+            }
+        }
+
+        // Schedule report
+        async function scheduleReport() {
+            const dateRange = document.getElementById('reportDateRange').value;
+            const reportType = document.getElementById('reportType').value;
+            const format = document.getElementById('reportFormat').value;
+
+            // This would typically open a modal for scheduling options
+            alert('Report scheduling feature would allow setting up automated reports. This requires additional backend implementation.');
+        }
+
+        // Navigation update to include analytics and reports
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            document.getElementById(sectionName + '-section').style.display = 'block';
+
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            currentSection = sectionName;
+
+            // Load data for the section
+            switch (sectionName) {
+                case 'analytics':
+                    loadPlatformAnalytics();
+                    break;
+                case 'reports':
+                    // Reports section loads data when "Generate Report" is clicked
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'projects':
+                    loadProjects();
+                    break;
+                case 'requests':
+                    loadRequests();
+                    break;
+                case 'chatrooms':
+                    loadChatrooms();
+                    break;
+                case 'crowdfunding':
+                    loadCrowdfundingStats();
+                    loadAvailableScripts();
+                    loadCrowdfundingCampaigns();
+                    loadUserFundingDashboards();
+                    break;
+                case 'scripts-ratings':
+                    loadScriptsRatings();
+                    break;
+                case 'read-lists':
+                    loadReadLists();
+                    break;
+                case 'post-production':
+                    loadPostProduction();
+                    break;
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        // Load read lists data
+        async function loadReadLists() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                // Load read lists stats
+                const statsRes = await fetch('http://localhost:3000/api/admin/read-lists/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (statsRes.ok) {
+                    const stats = await statsRes.json();
+                    displayReadListsStats(stats);
+                }
+
+                // Load users' read lists
+                const usersRes = await fetch('http://localhost:3000/api/admin/read-lists/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (usersRes.ok) {
+                    const users = await usersRes.json();
+                    displayReadListsTable(users);
+                }
+
+                // Load popular scripts
+                const popularRes = await fetch('http://localhost:3000/api/admin/read-lists/popular', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (popularRes.ok) {
+                    const popular = await popularRes.json();
+                    displayPopularScriptsTable(popular);
+                }
+
+            } catch (err) {
+                console.error('Error loading read lists:', err);
+            }
+        }
+
+        function displayReadListsStats(stats) {
+            const container = document.getElementById('readListsStatsGrid');
+            container.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalReadLists || 0}</div>
+                    <div class="stat-label">Total Read Lists</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalScriptsInLists || 0}</div>
+                    <div class="stat-label">Scripts in Read Lists</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.averageScriptsPerUser || 0}</div>
+                    <div class="stat-label">Avg Scripts/User</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.mostPopularScript ? stats.mostPopularScript.count : 0}</div>
+                    <div class="stat-label">Most Added Script</div>
+                </div>
+            `;
+        }
+
+        function displayReadListsTable(users) {
+            const tbody = document.getElementById('readListsTableBody');
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.readListCount || 0}</td>
+                    <td>${user.totalScriptsRead || 0}</td>
+                    <td>${user.lastActivity ? new Date(user.lastActivity).toLocaleDateString() : 'Never'}</td>
+                    <td>
+                        <button class="action-btn btn-sm btn-primary" onclick="viewUserReadList('${user._id}')">View List</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function displayPopularScriptsTable(scripts) {
+            const tbody = document.getElementById('popularScriptsTableBody');
+            tbody.innerHTML = scripts.map(script => `
+                <tr>
+                    <td>${script.title}</td>
+                    <td>${script.author}</td>
+                    <td>${script.genre}</td>
+                    <td>${script.readCount || 0}</td>
+                    <td>${script.status}</td>
+                    <td>
+                        <button class="action-btn btn-sm btn-info" onclick="viewScript('${script._id}')">View</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function exportReadLists() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/read-lists/export', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    // Create CSV content
+                    let csv = 'User,Email,Scripts in Read List,Last Activity\n';
+                    data.forEach(user => {
+                        csv += `${user.name},${user.email},${user.readListCount || 0},${user.lastActivity || 'Never'}\n`;
+                    });
+
+                    // Download CSV
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'read-lists-export.csv';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+
+                    alert('Read lists exported successfully!');
+                } else {
+                    alert('Failed to export read lists');
+                }
+            } catch (err) {
+                console.error('Error exporting read lists:', err);
+                alert('Error exporting read lists');
+            }
+        }
+
+        function viewUserReadList(userId) {
+            // This would open a modal with user's read list
+            alert('View user read list functionality would be implemented here');
+        }
+
+        function viewScript(scriptId) {
+            window.open(`scripts.html#script-${scriptId}`, '_blank');
+        }
+
+        // Load scripts ratings data
+        async function loadScriptsRatings() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                // Load ratings stats
+                const statsRes = await fetch('http://localhost:3000/api/admin/scripts-ratings/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (statsRes.ok) {
+                    const stats = await statsRes.json();
+                    displayScriptsRatingsStats(stats);
+                }
+
+                // Load scripts with ratings
+                const scriptsRes = await fetch('http://localhost:3000/api/admin/scripts-ratings', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (scriptsRes.ok) {
+                    const scripts = await scriptsRes.json();
+                    displayScriptsRatingsTable(scripts);
+                }
+
+                // Load rankings
+                const rankingsRes = await fetch('http://localhost:3000/api/admin/script-rankings', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (rankingsRes.ok) {
+                    const rankingsData = await rankingsRes.json();
+                    displayRankingsTable(rankingsData.rankings);
+                }
+
+            } catch (err) {
+                console.error('Error loading scripts ratings:', err);
+            }
+        }
+
+        function displayScriptsRatingsStats(stats) {
+            const container = document.getElementById('ratingsStatsGrid');
+            container.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalRatedScripts || 0}</div>
+                    <div class="stat-label">Scripts with Ratings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalRatings || 0}</div>
+                    <div class="stat-label">Total Ratings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.averageRating || 0}</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${((stats.totalRatings || 0) / Math.max(stats.totalRatedScripts || 1, 1)).toFixed(1)}</div>
+                    <div class="stat-label">Avg Ratings/Script</div>
+                </div>
+            `;
+        }
+
+        function displayScriptsRatingsTable(scripts) {
+            const tbody = document.getElementById('scriptsRatingsTableBody');
+            tbody.innerHTML = scripts.map(script => `
+                <tr>
+                    <td>${script.title}</td>
+                    <td>${script.author}</td>
+                    <td>${script.genre}</td>
+                    <td>${script.category}</td>
+                    <td>${script.averageRating.toFixed(1)}</td>
+                    <td>${script.totalRatings}</td>
+                    <td>
+                        <span class="status-badge status-${script.status}">
+                            ${script.status}
+                        </span>
+                    </td>
+                    <td>${new Date(script.createdAt).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        function displayRankingsTable(rankings) {
+            const tbody = document.getElementById('rankingsTableBody');
+            tbody.innerHTML = rankings.map(script => `
+                <tr>
+                    <td>${script.rank}</td>
+                    <td>${script.title}</td>
+                    <td>${script.author}</td>
+                    <td>${script.averageRating.toFixed(1)}</td>
+                    <td>${script.totalRatings}</td>
+                    <td>${script.score.toFixed(2)}</td>
+                    <td>
+                        <button class="action-btn btn-primary" onclick="viewScript('${script._id}')">View Script</button>
+                        <button class="action-btn btn-success" onclick="openCreateFilmModal('${script._id}')">Create Film</button>
+                        <button class="action-btn btn-warning" onclick="promoteScript('${script._id}')">Promote</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function exportScriptsRatings() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/scripts-ratings/export', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    // Create CSV content
+                    let csv = 'Title,Author,Genre,Category,Average Rating,Total Ratings,Status\n';
+                    data.forEach(script => {
+                        csv += `"${script.title}","${script.author}","${script.genre}","${script.category}",${script.averageRating},${script.totalRatings},"${script.status}"\n`;
+                    });
+
+                    // Download CSV
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'scripts-ratings-export.csv';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+
+                    alert('Scripts ratings exported successfully!');
+                } else {
+                    alert('Failed to export scripts ratings');
+                }
+            } catch (err) {
+                console.error('Error exporting scripts ratings:', err);
+                alert('Error exporting scripts ratings');
+            }
+        }
+
+        // Load post-production data
+        async function loadPostProduction() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                // Load post-production stats
+                const statsRes = await fetch('http://localhost:3000/api/admin/post-production/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (statsRes.ok) {
+                    const stats = await statsRes.json();
+                    displayPostProductionStats(stats);
+                }
+
+                // Load top rated scripts
+                const scriptsRes = await fetch('http://localhost:3000/api/admin/script-rankings?limit=20', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (scriptsRes.ok) {
+                    const data = await scriptsRes.json();
+                    displayTopScriptsTable(data.rankings);
+                }
+
+                // Load short films in production
+                const filmsRes = await fetch('http://localhost:3000/api/admin/post-production/short-films', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (filmsRes.ok) {
+                    const films = await filmsRes.json();
+                    displayShortFilmsTable(films);
+                }
+
+            } catch (err) {
+                console.error('Error loading post-production data:', err);
+            }
+        }
+
+        function displayPostProductionStats(stats) {
+            const container = document.getElementById('postProductionStatsGrid');
+            container.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalScripts || 0}</div>
+                    <div class="stat-label">Scripts Ready for Production</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalShortFilms || 0}</div>
+                    <div class="stat-label">Short Films in Production</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.completedFilms || 0}</div>
+                    <div class="stat-label">Completed Films</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.averageBudget || 0}</div>
+                    <div class="stat-label">Average Budget ($)</div>
+                </div>
+            `;
+        }
+
+        function displayTopScriptsTable(scripts) {
+            const tbody = document.getElementById('topScriptsTableBody');
+            tbody.innerHTML = scripts.map(script => `
+                <tr>
+                    <td>${script.title}</td>
+                    <td>${script.author}</td>
+                    <td>${script.genre}</td>
+                    <td>${script.averageRating.toFixed(1)}</td>
+                    <td>${script.totalRatings}</td>
+                    <td>
+                        <span class="status-badge status-${script.status}">
+                            ${script.status}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="action-btn btn-success" onclick="createShortFilm('${script._id}')">Create Film</button>
+                        <button class="action-btn btn-primary" onclick="viewScript('${script._id}')">View Script</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function displayShortFilmsTable(films) {
+            const tbody = document.getElementById('shortFilmsTableBody');
+            tbody.innerHTML = films.map(film => `
+                <tr>
+                    <td>${film.title}</td>
+                    <td>${film.scriptTitle}</td>
+                    <td>${film.director}</td>
+                    <td>$${film.budget}</td>
+                    <td>
+                        <span class="status-badge status-${film.status}">
+                            ${film.status}
+                        </span>
+                    </td>
+                    <td>${film.progress}%</td>
+                    <td>
+                        <button class="action-btn btn-warning" onclick="updateFilmProgress('${film._id}')">Update Progress</button>
+                        <button class="action-btn btn-danger" onclick="deleteFilm('${film._id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function createShortFilm(scriptId) {
+            const title = prompt('Enter film title:');
+            const director = prompt('Enter director name:');
+            const budget = prompt('Enter budget ($):');
+
+            if (!title || !director || !budget) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/post-production/short-films', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        scriptId,
+                        title,
+                        director,
+                        budget: parseFloat(budget)
+                    })
+                });
+
+                if (res.ok) {
+                    loadPostProduction();
+                    alert('Short film created successfully!');
+                } else {
+                    alert('Failed to create short film');
+                }
+            } catch (err) {
+                console.error('Error creating short film:', err);
+                alert('Error creating short film');
+            }
+        }
+
+        async function updateFilmProgress(filmId) {
+            const progress = prompt('Enter new progress percentage (0-100):');
+            if (progress === null || progress === '' || isNaN(progress) || progress < 0 || progress > 100) return;
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/post-production/short-films/${filmId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ progress: parseInt(progress) })
+                });
+
+                if (res.ok) {
+                    loadPostProduction();
+                    alert('Film progress updated successfully!');
+                } else {
+                    alert('Failed to update film progress');
+                }
+            } catch (err) {
+                console.error('Error updating film progress:', err);
+                alert('Error updating film progress');
+            }
+        }
+
+        async function deleteFilm(filmId) {
+            if (!confirm('Are you sure you want to delete this film?')) return;
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/post-production/short-films/${filmId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    loadPostProduction();
+                    alert('Film deleted successfully!');
+                } else {
+                    alert('Failed to delete film');
+                }
+            } catch (err) {
+                console.error('Error deleting film:', err);
+                alert('Error deleting film');
+            }
+        }
+
+        async function exportPostProduction() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/post-production/export', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    // Create CSV content
+                    let csv = 'Type,Title,Author/Director,Rating/Budget,Status,Progress\n';
+                    data.scripts.forEach(script => {
+                        csv += `Script,"${script.title}","${script.author}",${script.averageRating},"${script.status}",-\n`;
+                    });
+                    data.films.forEach(film => {
+                        csv += `Film,"${film.title}","${film.director}",$${film.budget},"${film.status}",${film.progress}%\n`;
+                    });
+
+                    // Download CSV
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'post-production-export.csv';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+
+                    alert('Post-production data exported successfully!');
+                } else {
+                    alert('Failed to export post-production data');
+                }
+            } catch (err) {
+                console.error('Error exporting post-production data:', err);
+                alert('Error exporting post-production data');
+            }
+        }
+
+        // Load crowdfunding stats
+        async function loadCrowdfundingStats() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/crowdfunding/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const stats = await res.json();
+                    document.getElementById('crowdfundingStatsGrid').innerHTML = `
+                        <div class="stat-card">
+                            <h3>${stats.totalCampaigns || 0}</h3>
+                            <p>Total Campaigns</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${stats.activeCampaigns || 0}</h3>
+                            <p>Active Campaigns</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>$${stats.totalRaised || 0}</h3>
+                            <p>Total Raised</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${stats.totalBackers || 0}</h3>
+                            <p>Total Backers</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error('Error loading crowdfunding stats:', err);
+            }
+        }
+
+        // Load available scripts for crowdfunding
+        async function loadAvailableScripts() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/crowdfunding/available-scripts', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const scripts = await res.json();
+                    const tbody = document.getElementById('availableScriptsTableBody');
+                    tbody.innerHTML = scripts.map(script => `
+                        <tr>
+                            <td>${script.title}</td>
+                            <td>${script.author}</td>
+                            <td>${script.genre}</td>
+                            <td>${script.averageRating.toFixed(1)}</td>
+                            <td>${script.totalRatings}</td>
+                            <td>
+                                <button class="action-btn btn-success" onclick="openCreateCampaignModal('${script._id}')">Create Campaign</button>
+                                <button class="action-btn btn-primary" onclick="viewScript('${script._id}')">View Script</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading available scripts:', err);
+            }
+        }
+
+        // Load crowdfunding campaigns
+        async function loadCrowdfundingCampaigns() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/crowdfunding', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const campaigns = await res.json();
+                    const tbody = document.getElementById('crowdfundingCampaignsTableBody');
+                    tbody.innerHTML = campaigns.map(campaign => `
+                        <tr>
+                            <td>${campaign.title}</td>
+                            <td>${campaign.script.title}</td>
+                            <td>$${campaign.goalAmount}</td>
+                            <td>$${campaign.currentAmount}</td>
+                            <td>${campaign.progressPercentage}%</td>
+                            <td>${campaign.totalBackers}</td>
+                            <td>
+                                <span class="status-badge status-${campaign.status}">
+                                    ${campaign.status}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="action-btn btn-primary" onclick="viewCampaign('${campaign._id}')">View</button>
+                                <button class="action-btn btn-warning" onclick="editCampaign('${campaign._id}')">Edit</button>
+                                <button class="action-btn btn-danger" onclick="deleteCampaign('${campaign._id}')">Delete</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading crowdfunding campaigns:', err);
+            }
+        }
+
+        // Load user funding dashboards
+        async function loadUserFundingDashboards() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/crowdfunding/contributions/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const users = await res.json();
+                    const tbody = document.getElementById('userFundingTableBody');
+                    tbody.innerHTML = users.map(user => `
+                        <tr>
+                            <td>${user.userName}</td>
+                            <td>${user.userEmail}</td>
+                            <td>$${user.totalContributions}</td>
+                            <td>${user.campaignsSupported}</td>
+                            <td>${user.contributionCount}</td>
+                            <td>
+                                <button class="action-btn btn-primary" onclick="viewUserDashboard('${user._id}')">View Dashboard</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading user funding dashboards:', err);
+            }
+        }
+
+        // Open create campaign modal
+        function openCreateCampaignModal(scriptId) {
+            // Store the script ID for later use
+            window.selectedScriptId = scriptId;
+
+            // Load users for campaign creation
+            loadUsersForCampaignCreation();
+
+            document.getElementById('createCampaignModal').style.display = 'flex';
+        }
+
+        // Load users for campaign creation
+        async function loadUsersForCampaignCreation() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const users = await res.json();
+                    // This would populate a select dropdown for campaign creator
+                    // For now, we'll use the current admin user
+                }
+            } catch (err) {
+                console.error('Error loading users for campaign creation:', err);
+            }
+        }
+
+        // Create crowdfunding campaign
+        async function createCampaign() {
+            const scriptId = window.selectedScriptId;
+            const title = document.getElementById('campaignTitle').value.trim();
+            const description = document.getElementById('campaignDescription').value.trim();
+            const goalAmount = document.getElementById('campaignGoalAmount').value;
+            const endDate = document.getElementById('campaignEndDate').value;
+
+            if (!title || !description || !goalAmount) {
+                alert('Please fill in all required fields (Title, Description, and Goal Amount)');
+                return;
+            }
+
+            if (description.length < 10) {
+                alert('Description must be at least 10 characters long');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/crowdfunding', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        scriptId,
+                        title,
+                        description,
+                        goalAmount: parseFloat(goalAmount),
+                        endDate: endDate ? new Date(endDate).toISOString() : null
+                    })
+                });
+
+                if (res.ok) {
+                    alert('Crowdfunding campaign created successfully!');
+                    closeModal('createCampaignModal');
+                    loadCrowdfundingCampaigns();
+                    loadCrowdfundingStats();
+                } else {
+                    const error = await res.json();
+                    alert('Failed to create campaign: ' + error.message);
+                }
+            } catch (err) {
+                console.error('Error creating campaign:', err);
+                alert('Error creating campaign');
+            }
+        }
+
+        // View campaign details
+        async function viewCampaign(campaignId) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/crowdfunding/${campaignId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const campaign = await res.json();
+                    // Display campaign details in a modal or new section
+                    alert(`Campaign: ${campaign.title}\nGoal: $${campaign.goalAmount}\nRaised: $${campaign.currentAmount}\nBackers: ${campaign.totalBackers}\nStatus: ${campaign.status}`);
+                }
+            } catch (err) {
+                console.error('Error viewing campaign:', err);
+            }
+        }
+
+        // Edit campaign
+        async function editCampaign(campaignId) {
+            // This would open an edit modal
+            alert('Edit campaign functionality would be implemented here');
+        }
+
+        // Delete campaign
+        async function deleteCampaign(campaignId) {
+            if (!confirm('Are you sure you want to delete this campaign?')) return;
+
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/crowdfunding/${campaignId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    alert('Campaign deleted successfully!');
+                    loadCrowdfundingCampaigns();
+                    loadCrowdfundingStats();
+                } else {
+                    alert('Failed to delete campaign');
+                }
+            } catch (err) {
+                console.error('Error deleting campaign:', err);
+                alert('Error deleting campaign');
+            }
+        }
+
+        // View user dashboard
+        async function viewUserDashboard(userId) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/admin/crowdfunding/user/${userId}/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const dashboard = await res.json();
+                    // Display user dashboard details
+                    alert(`User Dashboard:\nTotal Contributed: $${dashboard.totalContributed}\nCampaigns Backed: ${dashboard.totalBackedCampaigns}\nCampaigns Created: ${dashboard.totalCreatedCampaigns}`);
+                }
+            } catch (err) {
+                console.error('Error viewing user dashboard:', err);
+            }
+        }
+
+        // Export crowdfunding data
+        async function exportCrowdfundingData() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/crowdfunding/export', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    // Create CSV content
+                    let csv = 'Title,Script Title,Script Author,Goal Amount,Current Amount,Progress %,Total Backers,Status,Created By,Created At\n';
+                    data.forEach(campaign => {
+                        csv += `"${campaign.title}","${campaign.scriptTitle}","${campaign.scriptAuthor}",${campaign.goalAmount},${campaign.currentAmount},${campaign.progressPercentage},${campaign.totalBackers},"${campaign.status}","${campaign.createdBy}","${campaign.createdAt}"\n`;
+                    });
+
+                    // Download CSV
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'crowdfunding-export.csv';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+
+                    alert('Crowdfunding data exported successfully!');
+                } else {
+                    alert('Failed to export crowdfunding data');
+                }
+            } catch (err) {
+                console.error('Error exporting crowdfunding data:', err);
+                alert('Error exporting crowdfunding data');
+            }
+        }
+
+        // Load system logs
+        async function loadSystemLogs() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            const level = document.getElementById('logLevelFilter').value;
+            const timeRange = document.getElementById('logTimeFilter').value;
+            const category = document.getElementById('logCategoryFilter').value;
+
+            try {
+                const params = new URLSearchParams({
+                    level: level !== 'all' ? level : '',
+                    timeRange,
+                    category: category !== 'all' ? category : ''
+                });
+
+                const res = await fetch(`http://localhost:3000/api/admin/logs?${params}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const logs = await res.json();
+                    displaySystemLogs(logs);
+                    displayLogsStats(logs);
+                } else {
+                    document.getElementById('logsList').innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 20px;">No logs found or failed to load logs</div>';
+                }
+            } catch (err) {
+                console.error('Error loading system logs:', err);
+                document.getElementById('logsList').innerHTML = '<div style="color: #ef4444; text-align: center; padding: 20px;">Error loading logs</div>';
+            }
+        }
+
+        // Display system logs
+        function displaySystemLogs(logs) {
+            const container = document.getElementById('logsList');
+
+            if (!logs || logs.length === 0) {
+                container.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 20px;">No logs found</div>';
+                return;
+            }
+
+            const logsHtml = logs.map(log => `
+                <div class="log-entry" style="border: 1px solid #1e293b; border-radius: 8px; padding: 15px; margin-bottom: 10px; background: #020617;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="log-level log-level-${log.level || 'info'}" style="padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;">
+                                ${log.level || 'info'}
+                            </span>
+                            <span class="log-category" style="color: #cbd5f5; font-size: 12px;">${log.category || 'system'}</span>
+                        </div>
+                        <span class="log-timestamp" style="color: #94a3b8; font-size: 12px;">${new Date(log.timestamp || log.createdAt).toLocaleString()}</span>
+                    </div>
+                    <div class="log-message" style="color: #fff; margin-bottom: 5px;">${log.message}</div>
+                    ${log.user ? `<div class="log-user" style="color: #94a3b8; font-size: 12px;">User: ${log.user.name} (${log.user.email})</div>` : ''}
+                    ${log.details ? `<div class="log-details" style="color: #cbd5f5; font-size: 12px; margin-top: 5px; padding: 8px; background: #0f172a; border-radius: 4px;">${JSON.stringify(log.details, null, 2)}</div>` : ''}
+                </div>
+            `).join('');
+
+            container.innerHTML = logsHtml;
+        }
+
+        // Display logs statistics
+        function displayLogsStats(logs) {
+            const container = document.getElementById('logsStatsGrid');
+
+            if (!logs || logs.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            // Calculate stats
+            const totalLogs = logs.length;
+            const errorLogs = logs.filter(log => log.level === 'error').length;
+            const warningLogs = logs.filter(log => log.level === 'warning').length;
+            const adminLogs = logs.filter(log => log.category === 'admin').length;
+
+            container.innerHTML = `
+                <div class="stat-card">
+                    <h3>${totalLogs}</h3>
+                    <p>Total Logs</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${errorLogs}</h3>
+                    <p>Error Logs</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${warningLogs}</h3>
+                    <p>Warning Logs</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${adminLogs}</h3>
+                    <p>Admin Actions</p>
+                </div>
+            `;
+        }
+
+        // Export system logs
+        async function exportSystemLogs() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/logs/export', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    // Create CSV content
+                    let csv = 'Timestamp,Level,Category,Message,User,Details\n';
+                    data.forEach(log => {
+                        const userInfo = log.user ? `${log.user.name} (${log.user.email})` : '';
+                        const details = log.details ? JSON.stringify(log.details) : '';
+                        csv += `"${log.timestamp || log.createdAt}","${log.level || 'info'}","${log.category || 'system'}","${log.message}","${userInfo}","${details}"\n`;
+                    });
+
+                    // Download CSV
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `system_logs_${new Date().toISOString().split('T')[0]}.csv`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+
+                    alert('System logs exported successfully!');
+                } else {
+                    alert('Failed to export system logs');
+                }
+            } catch (err) {
+                console.error('Error exporting system logs:', err);
+                alert('Error exporting system logs');
+            }
+        }
+
+        // Clear system logs
+        async function clearSystemLogs() {
+            if (!confirm('Are you sure you want to clear all system logs? This action cannot be undone.')) return;
+
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('http://localhost:3000/api/admin/logs', {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    alert('System logs cleared successfully!');
+                    loadSystemLogs(); // Refresh the logs display
+                } else {
+                    alert('Failed to clear system logs');
+                }
+            } catch (err) {
+                console.error('Error clearing system logs:', err);
+                alert('Error clearing system logs');
+            }
+        }
+
+        // Initialize
+        checkAuth();
+        loadStats();
+    </script>
+</body>
+</html>
