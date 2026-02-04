@@ -91,20 +91,7 @@ async function createAdminUser() {
 }
 
 // Function to populate sample data
-async function populateSampleData() {
-    try {
-        const Script = require("./models/Script");
-        const ShortFilm = require("./models/ShortFilm");
-        const Request = require("./models/Request");
-        const ChatMessage = require("./models/ChatMessage");
 
-        // Check if data already exists (5 sample users and projects)
-        const existingUsers = await User.countDocuments();
-        const existingProjects = await Project.countDocuments();
-        if (existingUsers >= 5 && existingProjects >= 4) {
-            console.log("Sample data already exists");
-            return;
-        }
 
         // Clear existing data
         console.log("Clearing existing data...");
